@@ -1,9 +1,8 @@
 /* jQuery idleNotice Widget 1.0-pre by Jacob Morrison
  * http://projects.ofjacob.com
  *
- * Dual licensed under the MIT and GPL licenses:
+ * Licensed under the MIT license:
  *   http://www.opensource.org/licenses/mit-license.php
- *   http://www.gnu.org/licenses/gpl.html
 */
 
 (function($){
