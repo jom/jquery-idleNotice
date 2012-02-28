@@ -1,0 +1,56 @@
+jQuery idleNotice Widget 1.0-pre by Jacob Morrison
+http://projects.ofjacob.com
+
+ Licensed under the MIT license:
+   http://www.opensource.org/licenses/mit-license.php
+
+Example usage (client script):
+
+$(document).idleNotice({
+		'loadTime': null,		/* Server's unix time at page load (ex: <?php echo time(); ?>) */
+    	'expireTime': null,		/* Unix time (server) until expiration (ex: <?php echo time() + ini_get('session.gc_maxlifetime'); ?>) */
+    	'expireWarning': 60, 	/* Seconds to warn before expiration */
+    	'stayActiveAjax': {
+			'url': "/keep_active.php",    	/* URL to ping to keep session active */
+			'notify': true,
+			'notifyMessage': 'Attempting to keep session...',
+    	},
+    	'onExpire': null,		/* What to do when session expires */
+    	'warningDialog': {
+    		'title': 'Session Expiration Notice',
+    		'modal': true, 
+    		'width': '400px', 
+    		'position': 'top',
+    		'draggable': false,
+    		'resizable': false,
+    		'content': "You will be logged out in #{time}. Do you want to stay logged in and continue on this screen?",		/* Notice to show before expiration */
+    		'buttons': {
+    			'Stay Logged In': function() { $(document).trigger("stayActive"); }
+    		}
+    	},
+    	'expireDialog': {
+    		'title': 'Session Has Expired',
+    		'modal': true, 
+    		'width': '400px', 
+    		'position': 'top',
+    		'draggable': false,
+    		'resizable': false,
+    		'content': "You have been logged out due to inactivity.",		/* Notice to show before expiration */
+    		'buttons': {
+    			'Log Back In': "function() { window.location.reload(); }"
+    		},
+    	}});
+    	
+Example usage (server script, PHP):
+<?php
+// in case it hasn't been started
+session_start();
+$json_return = array(
+	'success' => 1,
+	'current' => time(),
+	'expire' => time() + ini_get('session.gc_maxlifetime')
+);
+
+echo '['. json_encode($json_return) .']';
+?>
+
