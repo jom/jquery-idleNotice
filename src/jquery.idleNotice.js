@@ -11,7 +11,7 @@
 	_localTimeDiff: null,
 	_lockCountdown: null,
 	_keepAliveAjax: null,
-	_expireDialogId: null,
+	_expiredDialogId: null,
 	_warningDialogId: null,
 	_warningTimeId: null,
 	
@@ -37,7 +37,7 @@
     			'Stay Logged In': function() { $(document).trigger("stayActive"); }
     		}
     	},
-    	'expireDialog': {
+    	'expiredDialog': {
     		'title': 'Session Has Expired',
     		'modal': true, 
     		'width': '400px', 
@@ -60,7 +60,7 @@
 		this._localTimeDiff = Math.floor(mDate.getTime() / 1000) - this.options.loadTime;
 		
       	/* come up with IDs */
-      	this._expireDialogId = "jom-idleNotice-expire-"+mDate.getTime();
+      	this._expiredDialogId = "jom-idleNotice-expire-"+mDate.getTime();
       	this._warningDialogId = "jom-idleNotice-warning-"+mDate.getTime();
       	this._warningTimeId = "jom-idleNotice-time-"+mDate.getTime();
       	
@@ -69,13 +69,13 @@
     	this.options.warningDialog.content = this.options.warningDialog.content.replace(/#(?:\{|%7B)(.*?)(?:\}|%7D)/g, function($1, $2){
         	return ($2 in params) ? params[$2] : '';
       	});
-      	$("body").append("<div id='"+this._expireDialogId+"'>"+this.options.expireDialog.content+"</div>");
+      	$("body").append("<div id='"+this._expiredDialogId+"'>"+this.options.expiredDialog.content+"</div>");
       	$("body").append("<div id='"+this._warningDialogId+"'>"+this.options.warningDialog.content+"</div>");
       	
-      	this.options.expireDialog.autoOpen = false;
-      	this.options.expireDialog.beforeClose = function() { return false; }
+      	this.options.expiredDialog.autoOpen = false;
+      	this.options.expiredDialog.beforeClose = function() { return false; }
       	this.options.warningDialog.autoOpen = false;
-      	$("#"+this._expireDialogId).dialog(this.options.expireDialog);
+      	$("#"+this._expiredDialogId).dialog(this.options.expiredDialog);
       	$("#"+this._warningDialogId).dialog(this.options.warningDialog);
       	
       	/* set up my stayActive trigger */
@@ -111,9 +111,9 @@
 			}
 		} else { /* we've expired */
 			$("#"+this._warningDialogId).dialog("close");
-			if(!$("#"+this._expireDialogId).dialog("isOpen")) {
-				$("#"+this._expireDialogId).parent('.ui-dialog').find(".ui-dialog-titlebar-close").remove();
-				$("#"+this._expireDialogId).dialog("open");
+			if(!$("#"+this._expiredDialogId).dialog("isOpen")) {
+				$("#"+this._expiredDialogId).parent('.ui-dialog').find(".ui-dialog-titlebar-close").remove();
+				$("#"+this._expiredDialogId).dialog("open");
 			}
 			/* just stop. stop counting down. */
 			clearInterval(this._lockCountdown);

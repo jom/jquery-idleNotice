@@ -28,7 +28,7 @@ $(document).idleNotice({
     			'Stay Logged In': function() { $(document).trigger("stayActive"); }
     		}
     	},
-    	'expireDialog': {
+    	'expiredDialog': {
     		'title': 'Session Has Expired',
     		'modal': true, 
     		'width': '400px', 
