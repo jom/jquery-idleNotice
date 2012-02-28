@@ -55,7 +55,9 @@
     _create: function(){
     	var self = this;
     	var mDate = new Date();
-    	
+    	if (this.options.loadTime == null || this.options.expireTime == null) {
+    		return false;
+    	}
     	/* figure out how far off this computer is from server */
 		this._localTimeDiff = Math.floor(mDate.getTime() / 1000) - this.options.loadTime;
 		
@@ -81,7 +83,7 @@
       	/* set up my stayActive trigger */
       	$(document).bind("stayActive", function() {
 			$("#"+self._warningDialogId).dialog("close");
-      		if(self.options.stayActiveAjax.url) {
+      		if (self.options.stayActiveAjax.url) {
       			self.options.stayActiveAjax.success = function(data) {
       				if (data.success) {
     					var mDate = new Date();
@@ -105,13 +107,13 @@
 		var diff = this.options.expireTime - Math.floor(mDate.getTime() / 1000) + this._localTimeDiff;
 		if (diff > 0) { /* we haven't expired yet */
 			$("#"+this._warningTimeId).html(this._formatSeconds(diff));
-			if(!this._keepAliveAjax && diff < this.options.expireWarning && !$("#"+this._warningDialogId).dialog("isOpen")) {
+			if (!this._keepAliveAjax && diff < this.options.expireWarning && !$("#"+this._warningDialogId).dialog("isOpen")) {
 				$("#"+this._warningDialogId).dialog("open");
 				$("#"+this._warningDialogId).parent('.ui-dialog').find(".ui-dialog-titlebar-close").remove();
 			}
 		} else { /* we've expired */
 			$("#"+this._warningDialogId).dialog("close");
-			if(!$("#"+this._expiredDialogId).dialog("isOpen")) {
+			if (!$("#"+this._expiredDialogId).dialog("isOpen")) {
 				$("#"+this._expiredDialogId).parent('.ui-dialog').find(".ui-dialog-titlebar-close").remove();
 				$("#"+this._expiredDialogId).dialog("open");
 			}
@@ -124,7 +126,7 @@
 	_formatSeconds: function(seconds) {
 		var minVar = Math.floor(seconds/60);
 		var secVar = (seconds % 60);
-		if(minVar > 0) {
+		if (minVar > 0) {
 			return minVar + " minutes and " + secVar + " seconds";
 		} else {
 			return secVar + " seconds";

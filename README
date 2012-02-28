@@ -6,6 +6,8 @@ http://projects.ofjacob.com
 
 Example usage (client script):
 
+Only loadTime and expireTime is required. If stayActiveAjax.url isn't set, the stay active functionality won't work.
+
 $(document).idleNotice({
 		'loadTime': null,		/* Server's unix time at page load (ex: <?php echo time(); ?>) */
     	'expireTime': null,		/* Unix time (server) until expiration (ex: <?php echo time() + ini_get('session.gc_maxlifetime'); ?>) */
