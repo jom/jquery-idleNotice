@@ -53,6 +53,6 @@ $json_return = array(
 	'expire' => time() + ini_get('session.gc_maxlifetime')
 );
 
-echo '['. json_encode($json_return) .']';
+echo json_encode($json_return);exit;
 ?>
 
