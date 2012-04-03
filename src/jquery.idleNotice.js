@@ -11,6 +11,8 @@
 	_localTimeDiff: null,
 	_lockCountdown: null,
 	_keepAliveAjax: null,
+	_checkActiveCountdown: null,
+	_checkActiveAjax: null,
 	_expiredDialogId: null,
 	_warningDialogId: null,
 	_warningTimeId: null,
@@ -24,6 +26,11 @@
 			'notify': true,
 			'notifyMessage': 'Attempting to keep session...',
     	},
+    	'checkActiveInterval': 5,
+    	'checkActiveAjax': {
+			'url': null,    	/* URL to ping to update session expire time */
+			'notify': false
+    	},
     	'onExpire': null,		/* What to do when session expires */
     	'warningDialog': {
     		'title': 'Session Expiration Notice',
@@ -32,6 +39,7 @@
     		'position': 'top',
     		'draggable': false,
     		'resizable': false,
+    		'zIndex': 500000,
     		'content': "You will be logged out in #{time}. Do you want to stay logged in and continue on this screen?",		/* Notice to show before expiration */
     		'buttons': {
     			'Stay Logged In': function() { $(document).trigger("stayActive"); }
@@ -44,6 +52,7 @@
     		'position': 'top',
     		'draggable': false,
     		'resizable': false,
+    		'zIndex': 500000,
     		'content': "You have been logged out due to inactivity.",		/* Notice to show before expiration */
     		'buttons': {
     			'Log Back In': "function() { window.location.reload(); }"
@@ -83,6 +92,8 @@
       	/* set up my stayActive trigger */
       	$(document).bind("stayActive", function() {
 			$("#"+self._warningDialogId).dialog("close");
+			clearInterval(self._checkActiveCountdown); 
+			self._checkActiveCountdown = null;
       		if (self.options.stayActiveAjax.url) {
       			self.options.stayActiveAjax.success = function(data) {
       				if (data.success) {
@@ -97,7 +108,38 @@
       		}
       	});
       	
-      	/* start the timer! */
+      	/* set up my checkActive trigger */
+      	$(document).bind("checkActive", function() {
+      		if (self.options.checkActiveAjax.url) {
+      			self.options.checkActiveAjax.success = function(data) {
+      				if (data.current && data.expire) {
+    					var mDate = new Date();
+						self.options.loadTime = data.current;
+						if (self.options.expireTime != data.expire) {
+							console.log("Updated expire to: "+ self.options.expireTime);
+							self.options.expireTime = data.expire;
+						}
+						self._localTimeDiff = Math.floor(mDate.getTime() / 1000) - self.options.loadTime;
+						var diff = self.options.expireTime - Math.floor(mDate.getTime() / 1000) + self._localTimeDiff;
+						if (!self._keepAliveAjax && diff < self.options.expireWarning && !$("#"+self._warningDialogId).dialog("isOpen")) {
+							$("#"+self._warningDialogId).dialog("open");
+							$("#"+self._warningDialogId).parent('.ui-dialog').find(".ui-dialog-titlebar-close").remove();
+						} else if(diff > self.options.expireWarning) {
+							$("#"+self._warningDialogId).dialog("close");
+							clearInterval(self._checkActiveCountdown); 
+							self._checkActiveCountdown = null;
+						}
+      				}
+					self._checkActiveAjax = null;
+      			};
+      			if (self._checkActiveAjax == null) {
+      				self._checkActiveAjax = $.ajax(self.options.checkActiveAjax);
+      			}
+      		}
+      	});
+      	
+      	/* start the timers! */
+      	
 		this._lockCountdown = setInterval(function() { self._countdown(); }, 1000);
     },
 	
@@ -108,9 +150,15 @@
 		if (diff > 0) { /* we haven't expired yet */
 			$("#"+this._warningTimeId).html(this._formatSeconds(diff));
 			if (!this._keepAliveAjax && diff < this.options.expireWarning && !$("#"+this._warningDialogId).dialog("isOpen")) {
-				$("#"+this._warningDialogId).dialog("open");
-				$("#"+this._warningDialogId).parent('.ui-dialog').find(".ui-dialog-titlebar-close").remove();
+				if (this._checkActiveCountdown == null && this.options.checkActiveAjax.url) { /* if we're using checkActive, we'll let that control the warnings */
+					$(document).trigger("checkActive");
+					this._checkActiveCountdown = setInterval(function() { $(document).trigger("checkActive"); }, this.options.checkActiveInterval * 1000);
+				} else if(!this.options.checkActiveAjax.url) { /* otherwise we'll do it */
+					$("#"+this._warningDialogId).dialog("open");
+					$("#"+this._warningDialogId).parent('.ui-dialog').find(".ui-dialog-titlebar-close").remove();
+				}
 			}
+			
 		} else { /* we've expired */
 			$("#"+this._warningDialogId).dialog("close");
 			if (!$("#"+this._expiredDialogId).dialog("isOpen")) {
@@ -119,6 +167,9 @@
 			}
 			/* just stop. stop counting down. */
 			clearInterval(this._lockCountdown);
+			this._lockCountdown = null;
+			clearInterval(this._checkActiveCountdown); 
+			this._checkActiveCountdown = null;
 		}
 	},
 	
