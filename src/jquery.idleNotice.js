@@ -22,14 +22,14 @@
     	'expireTime': null,		/* Unix time (server) until expiration */
     	'expireWarning': 60, 	/* Seconds to warn before expiration */
     	'stayActiveAjax': {
-			'url': null,    	/* URL to ping to keep session active */
-			'notify': true,
-			'notifyMessage': 'Attempting to keep session...',
+    		'url': null,    	/* URL to ping to keep session active */
+    		'notify': true,
+    		'notifyMessage': 'Attempting to keep session...'
     	},
     	'checkActiveInterval': 5,
     	'checkActiveAjax': {
-			'url': null,    	/* URL to ping to update session expire time */
-			'notify': false
+  			'url': null,    	/* URL to ping to update session expire time */
+  			'notify': false
     	},
     	'onExpire': null,		/* What to do when session expires */
     	'warningDialog': {
@@ -56,9 +56,8 @@
     		'content': "You have been logged out due to inactivity.",		/* Notice to show before expiration */
     		'buttons': {
     			'Log Back In': "function() { window.location.reload(); }"
-    		},
-    	},
-    	
+    		}
+    	}
     },
 
     _create: function(){
@@ -182,6 +181,6 @@
 		} else {
 			return secVar + " seconds";
 		}
-	},
+	}
   });
 })(jQuery);
