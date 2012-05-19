@@ -16,7 +16,7 @@
 	_expiredDialogId: null,
 	_warningDialogId: null,
 	_warningTimeId: null,
-	
+
     options: {
     	'loadTime': null,		/* Server's unix time at page load */
     	'expireTime': null,		/* Unix time (server) until expiration */
@@ -34,8 +34,8 @@
     	'onExpire': null,		/* What to do when session expires */
     	'warningDialog': {
     		'title': 'Session Expiration Notice',
-    		'modal': true, 
-    		'width': '400px', 
+    		'modal': true,
+    		'width': '400px',
     		'position': 'top',
     		'draggable': false,
     		'resizable': false,
@@ -47,8 +47,8 @@
     	},
     	'expiredDialog': {
     		'title': 'Session Has Expired',
-    		'modal': true, 
-    		'width': '400px', 
+    		'modal': true,
+    		'width': '400px',
     		'position': 'top',
     		'draggable': false,
     		'resizable': false,
@@ -68,12 +68,12 @@
     	}
     	/* figure out how far off this computer is from server */
 		this._localTimeDiff = Math.floor(mDate.getTime() / 1000) - this.options.loadTime;
-		
+
       	/* come up with IDs */
       	this._expiredDialogId = "jom-idleNotice-expire-"+mDate.getTime();
       	this._warningDialogId = "jom-idleNotice-warning-"+mDate.getTime();
       	this._warningTimeId = "jom-idleNotice-time-"+mDate.getTime();
-      	
+
       	/* make and set up my dialogs */
       	var params = {'time': '<span style="font-weight:bold;" id="'+this._warningTimeId+'"></span>'};
     	this.options.warningDialog.content = this.options.warningDialog.content.replace(/#(?:\{|%7B)(.*?)(?:\}|%7D)/g, function($1, $2){
@@ -81,17 +81,17 @@
       	});
       	$("body").append("<div id='"+this._expiredDialogId+"'>"+this.options.expiredDialog.content+"</div>");
       	$("body").append("<div id='"+this._warningDialogId+"'>"+this.options.warningDialog.content+"</div>");
-      	
+
       	this.options.expiredDialog.autoOpen = false;
       	this.options.expiredDialog.beforeClose = function() { return false; }
       	this.options.warningDialog.autoOpen = false;
       	$("#"+this._expiredDialogId).dialog(this.options.expiredDialog);
       	$("#"+this._warningDialogId).dialog(this.options.warningDialog);
-      	
+
       	/* set up my stayActive trigger */
       	$(document).bind("stayActive", function() {
 			$("#"+self._warningDialogId).dialog("close");
-			clearInterval(self._checkActiveCountdown); 
+			clearInterval(self._checkActiveCountdown);
 			self._checkActiveCountdown = null;
       		if (self.options.stayActiveAjax.url) {
       			self.options.stayActiveAjax.success = function(data) {
@@ -106,7 +106,7 @@
       			self._keepAliveAjax = $.ajax(self.options.stayActiveAjax);
       		}
       	});
-      	
+
       	/* set up my checkActive trigger */
       	$(document).bind("checkActive", function() {
       		if (self.options.checkActiveAjax.url) {
@@ -115,7 +115,7 @@
     					var mDate = new Date();
 						self.options.loadTime = data.current;
 						if (self.options.expireTime != data.expire) {
-							console.log("Updated expire to: "+ self.options.expireTime);
+							/*console.log("Updated expire to: "+ self.options.expireTime);*/
 							self.options.expireTime = data.expire;
 						}
 						self._localTimeDiff = Math.floor(mDate.getTime() / 1000) - self.options.loadTime;
@@ -125,7 +125,7 @@
 							$("#"+self._warningDialogId).parent('.ui-dialog').find(".ui-dialog-titlebar-close").remove();
 						} else if(diff > self.options.expireWarning) {
 							$("#"+self._warningDialogId).dialog("close");
-							clearInterval(self._checkActiveCountdown); 
+							clearInterval(self._checkActiveCountdown);
 							self._checkActiveCountdown = null;
 						}
       				}
@@ -136,12 +136,12 @@
       			}
       		}
       	});
-      	
+
       	/* start the timers! */
-      	
+
 		this._lockCountdown = setInterval(function() { self._countdown(); }, 1000);
     },
-	
+
 	/* Function that counts down and opens dialog */
 	_countdown: function() {
 		var mDate = new Date();
@@ -157,7 +157,7 @@
 					$("#"+this._warningDialogId).parent('.ui-dialog').find(".ui-dialog-titlebar-close").remove();
 				}
 			}
-			
+
 		} else { /* we've expired */
 			$("#"+this._warningDialogId).dialog("close");
 			if (!$("#"+this._expiredDialogId).dialog("isOpen")) {
@@ -167,11 +167,11 @@
 			/* just stop. stop counting down. */
 			clearInterval(this._lockCountdown);
 			this._lockCountdown = null;
-			clearInterval(this._checkActiveCountdown); 
+			clearInterval(this._checkActiveCountdown);
 			this._checkActiveCountdown = null;
 		}
 	},
-	
+
 	/* Helper function to format time left */
 	_formatSeconds: function(seconds) {
 		var minVar = Math.floor(seconds/60);
