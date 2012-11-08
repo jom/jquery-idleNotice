@@ -39,7 +39,7 @@
     		'position': 'top',
     		'draggable': false,
     		'resizable': false,
-    		'zIndex': 500000,
+    		'zIndex': 100000,
     		'content': "You will be logged out in #{time}. Do you want to stay logged in and continue on this screen?",		/* Notice to show before expiration */
     		'buttons': {
     			'Stay Logged In': function() { $(document).trigger("stayActive"); }
@@ -52,7 +52,7 @@
     		'position': 'top',
     		'draggable': false,
     		'resizable': false,
-    		'zIndex': 500000,
+    		'zIndex': 100000,
     		'content': "You have been logged out due to inactivity.",		/* Notice to show before expiration */
     		'buttons': {
     			'Log Back In': "function() { window.location.reload(); }"
